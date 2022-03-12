@@ -3,10 +3,13 @@ Datos del sistema.
 By: EssEnemiGz
 """
 
+from requests import get
 from sys import argv
+from random import randint
 from subprocess import run
+import time
 
-def command(commands): 
+def command(commands):
     output = run(commands.split(":"), capture_output=True)
     return output.stdout.decode()
 
@@ -18,7 +21,6 @@ class main:
 
         name = command("whoami")
         
-        from random import randint
         rColor = randint(31, 36) 
         rColor = f"\033[1;{rColor}m"      
         print(command(f'cowsay:-f:tux:"Welcome back to {OS}, {rColor}{name}\033[0m"'))
@@ -40,33 +42,42 @@ class main:
                 return "\033[1;32m"
             elif int(capacity) < 35:
                 return "\033[1;31m"
-        
+
         def batteryStatus(argv):
             if argv == "Unknown" or argv == "Charging":
                 return f"\033[1;32m Status -> Charging"
             elif argv == "Discharging":
                 return f"\033[1;31m Status -> {argv}"
-
+        
         ruta = command("find:/sys/class/power_supply").split()
-        nuevaRuta = open(f"{ruta[1]}/status").read().strip()
-        if nuevaRuta == "Discharging":
-            print(f"\033[1;31m Status -> {nuevaRuta} \033[0m")
+        nuevaRuta = ""
+        for i in ruta:
+            if "BAT" in i:
+                nuevaRuta = i
+            else:
+                continue
+        
+        capacity = open(f"{nuevaRuta}/capacity").read().strip()
+        print(f"{color(capacity)} Capacity -> {capacity}% \033[0m")
+        
+        status = open(f"{nuevaRuta}/status").read().strip()
+
+        if status == "Discharging":
+            print(f"\033[1;31m Status -> {status} \033[0m")
+        elif status == "Unknown":
+            print(f"\033[1;36m Status -> Full \033[0m")
         else:
-            print(f"\033[1;32m Status -> {nuevaRuta} \033[0m")
+            print(f"\033[1;32m Status -> {status} \033[0m")
 
 objeto = main()
 
 if len(argv) == 1:
-    import time
     objeto.welcome()
     # Tiempo
     print(f"    \033[1;35m Hour: \033[0m \033[1;33m {time.strftime('%X')} \033[0m")
     objeto.IP()
     objeto.battery()
 
-elif argv[1] in ["-p", "--public"] : 
-    from requests import get
-
+elif argv[1] in ["-p", "--public"] :
     ip = get("http://ipecho.me").content.decode('utf-8').strip()
     print(f"\033[1;31m Public IP -> {ip}\033[0m")
-
