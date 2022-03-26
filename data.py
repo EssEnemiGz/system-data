@@ -77,7 +77,8 @@ if len(argv) == 1:
     print(f"    \033[1;35m Hour: \033[0m \033[1;33m {time.strftime('%X')} \033[0m")
     objeto.IP()
     objeto.battery()
-
+    
 elif argv[1] in ["-p", "--public"] :
     ip = get("http://ipecho.me").content.decode('utf-8').strip()
     print(f"\033[1;31m Public IP -> {ip}\033[0m")
+    
