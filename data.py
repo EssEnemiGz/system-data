@@ -35,20 +35,6 @@ class main:
         except OSError:
             print("\033[1;31m Error:\033[0m La conexión está deshabilitada.")
     def battery(self):
-        def color(capacity):
-            if int(capacity) >= 35 and int(capacity) < 65:
-                return "\033[1;33m"
-            elif int(capacity) >= 65:
-                return "\033[1;32m"
-            elif int(capacity) < 35:
-                return "\033[1;31m"
-
-        def batteryStatus(argv):
-            if argv == "Unknown" or argv == "Charging":
-                return f"\033[1;32m Status -> Charging"
-            elif argv == "Discharging":
-                return f"\033[1;31m Status -> {argv}"
-        
         ruta = command("find:/sys/class/power_supply").split()
         nuevaRuta = ""
         for i in ruta:
@@ -58,7 +44,13 @@ class main:
                 continue
         
         capacity = open(f"{nuevaRuta}/capacity").read().strip()
-        print(f"{color(capacity)} Capacity -> {capacity}% \033[0m")
+
+        if int(capacity) >= 35 and int(capacity) < 65:
+            print(f"\033[1;33m Capacity -> {capacity}% \033[0m")
+        elif int(capacity) >= 65:
+            print(f"\033[1;32m Capacity -> {capacity}% \033[0m")
+        elif int(capacity) < 35:
+            print(f"\033[1;31m Capacity -> {capacity}% \033[0m")
         
         status = open(f"{nuevaRuta}/status").read().strip()
 
